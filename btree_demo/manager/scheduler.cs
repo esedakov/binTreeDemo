@@ -96,8 +96,14 @@ namespace btree_demo.manager
         {
             //create and add task to stack
             this._stack.Push(new task(this._tree, key, type__task.INSERT, isTraced));
-            //if not tracing
-            if( isTraced == false)
+            //if tracing
+            if( isTraced )
+            {
+                //draw tree
+                this.drawTreeForLastAddedTask();
+            }
+            //else, not tracing
+            else
             {
                 //perform task right away
                 performCurrentTask();
@@ -112,8 +118,14 @@ namespace btree_demo.manager
         {
             //create and add task to stack
             this._stack.Push(new task(this._tree, key, type__task.DELETE, isTraced));
-            //if not tracing
-            if (isTraced == false)
+            //if tracing
+            if (isTraced)
+            {
+                //draw tree
+                this.drawTreeForLastAddedTask();
+            }
+            //else, not tracing
+            else
             {
                 //perform task right away
                 performCurrentTask();
@@ -128,8 +140,14 @@ namespace btree_demo.manager
         {
             //create and add task to stack
             this._stack.Push(new task(this._tree, key, type__task.SEARCH));
-            //if not tracing
-            if (isTraced == false)
+            //if tracing
+            if (isTraced)
+            {
+                //draw tree
+                this.drawTreeForLastAddedTask();
+            }
+            //else, not tracing
+            else
             {
                 //perform task right away
                 performCurrentTask();
@@ -159,8 +177,19 @@ namespace btree_demo.manager
                 //reset flag
                 isTaskDone = true;
             }   //end if current task has been completed
+            //draw binary tree
+            this.drawTree(cur);
+            //return state of current task
+            return isTaskDone ? type__state.CURRENT_TASK_IS_FINISHED : type__state.KEEP_WORKING;
+        }   //end function 'performCurrentTask'
+        /// <summary>
+        /// draw tree given the task
+        /// </summary>
+        /// <param name="cur">current task that describes the tree topology and procedure applied to it</param>
+        private void drawTree(task cur)
+        {
             //depending on type of task
-            switch( cur.TYPE )
+            switch (cur.TYPE)
             {
                 //if inserting new node OR searching existing node
                 case type__task.INSERT:
@@ -174,8 +203,20 @@ namespace btree_demo.manager
                 default:
                     throw new Exception("scheduler : performCurrentTask : unkown task type");
             }   //end switch - depending on type of task
-            //return state of current task
-            return isTaskDone ? type__state.CURRENT_TASK_IS_FINISHED : type__state.KEEP_WORKING;
-        }   //end function 'performCurrentTask'
+        }   //end function 'drawTree'
+        /// <summary>
+        /// draw tree using the last added task
+        /// </summary>
+        private void drawTreeForLastAddedTask()
+        {
+            //if stack of tasks is not empty
+            if( this._stack.Count > 0)
+            {
+                //reset tracing flag
+                this._tree.DONE_TRACING = !this._tree.DO_TRACE;
+                //draw tree for the last added task
+                this.drawTree(this._stack.Peek());
+            }   //end if stack of tasks is not empty
+        }   //end function 'drawTreeForLastAddedTask'
     }
 }

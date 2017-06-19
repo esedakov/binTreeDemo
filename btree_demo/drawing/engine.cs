@@ -227,6 +227,12 @@ namespace btree_demo.drawing
         {
             //init resulting collection
             Dictionary<node, Point> res = new Dictionary<node, Point>();
+            //if tree is empty
+            if( this._tree.ROOT == null )
+            {
+                //return immediately
+                return new KeyValuePair<Dictionary<node, Point>, Size>(res, new Size(this._margin * 2, this._margin * 2));
+            }
             //get tree levels
             List<List<node>> levels = this._tree.getLevels();
             //count number leaf nodes

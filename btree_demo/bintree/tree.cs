@@ -56,13 +56,17 @@ namespace btree_demo.bintree
             }
         }
         /// <summary>
-        /// getter for flag that indicates if last operation finished
+        /// getter/setter for flag that indicates if last operation finished
         /// </summary>
         public bool DONE_TRACING
         {
             get
             {
                 return this._doneTracingOp;
+            }
+            set
+            {
+                this._doneTracingOp = value;
             }
         }
         /// <summary>
@@ -342,9 +346,13 @@ namespace btree_demo.bintree
         /// <returns>if operation failed then NULL is returned, otherwise, it returns node that has specified key</returns>
         public node find(node cur, Object key)
         {
+            //search is not finished
+            this._doneTracingOp = !this._doTrace;
             //if item was not found
             if( cur == null )
             {
+                //finished search
+                this._doneTracingOp = true;
                 //fail
                 return null;
             }   //end if item was not found
@@ -353,14 +361,21 @@ namespace btree_demo.bintree
             //if item was found
             if( compRes == 0 )
             {
+                //finished search
+                this._doneTracingOp = true;
                 //return this node
                 return cur;
             }
+            //determine which node to expand
+            node expandNode = compRes < 0 ? cur.LEFT : cur.RIGHT;
+            //if tracing
+            if ( this._doTrace)
+            {
+                //return which ever node, whose subtree may contains a key
+                return expandNode;
+            }
             //return values delivered by recursive call
-            return find(
-                compRes < 0 ? cur.LEFT : cur.RIGHT,
-                key
-            );
+            return find(expandNode, key);
         }   //end function 'find'
         /// <summary>
         /// count number of nodes that leaves
