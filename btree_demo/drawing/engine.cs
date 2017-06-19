@@ -95,6 +95,12 @@ namespace btree_demo.drawing
                     }   //end if this node is special
                     //draw node
                     this.drawNode(g, kvp.Value, kvp.Key.KEY.ToString(), curFont, centerFormat);
+                    //if there is parent
+                    if (kvp.Key.PARENT != null)
+                    {
+                        //draw connection to parent
+                        this.drawConnection(g, treeNodeInfo.Key[kvp.Key.PARENT], kvp.Value);
+                    }   //end if there is parent
                 }   //end loop for each node
             }   //end using - obtain graphics object for created bitmap
             //return resulting bitmap
@@ -108,13 +114,6 @@ namespace btree_demo.drawing
         /// <returns>created default font object</returns>
         protected Font createDefFont(int w, int h)
         {
-            //compute size of font
-            //see: 
-            float padx = ((float)w) * (0.05F);
-            float pady = ((float)h) * (0.05F);
-            float width = ((float)w) - 2 * padx;
-            float height = ((float)h) - 2 * pady;
-            float emSize = height;
             //get arial font
             return new Font(FontFamily.GenericSansSerif, 8.0f, FontStyle.Regular);
         }   //end function 'createDefFont'
@@ -186,11 +185,40 @@ namespace btree_demo.drawing
                     }   //end if this node is special
                     //draw node
                     this.drawNode(g, kvp.Value, kvp.Key.KEY.ToString(), curFont, centerFormat);
+                    //if there is parent
+                    if (kvp.Key.PARENT != null)
+                    {
+                        //draw connection to parent
+                        this.drawConnection(g, treeNodeInfo.Key[kvp.Key.PARENT], kvp.Value);
+                    }   //end if there is parent
                 }   //end loop for each node
             }   //end using - obtain graphics object for created bitmap
             //return resulting bitmap
             return res;
         }   //end function 'draw' for node insertion
+        /// <summary>
+        /// draw line connecting two nodes, represented by top-left positions p1 and p2
+        /// </summary>
+        /// <param name="g">graphics component for resulting bitmap that depicts binary tree</param>
+        /// <param name="p1">top-left coordinate of first node's circle</param>
+        /// <param name="p2">top-left coordinate of second node's circle</param>
+        protected void drawConnection(Graphics g, Point p1, Point p2)
+        {
+            //recalculate positions p1 and p2 to point to the centers of circles, rather than to top-left corner
+            p1.X += this._rad;
+            p1.Y += this._rad;
+            p2.X += this._rad;
+            p2.Y += this._rad;
+            //compute vector from p1 to p2
+            Point p1_to_p2 = new Point(p2.X - p1.X, p2.Y - p1.Y);
+            //compute length of resulting vector
+            double len = Math.Sqrt(p1_to_p2.X * p1_to_p2.X + p1_to_p2.Y * p1_to_p2.Y);
+            //compute positions p1' and p2' that are shifted towards each other by radius of circle
+            Point _p1 = new Point((int)(p1.X + (1.0f * this._rad / len) * p1_to_p2.X), (int)(p1.Y + (1.0f * this._rad / len) * p1_to_p2.Y));
+            Point _p2 = new Point((int)(p2.X - (1.0f * this._rad / len) * p1_to_p2.X), (int)(p2.Y - (1.0f * this._rad / len) * p1_to_p2.Y));
+            //draw line
+            g.DrawLine(Pens.Black, _p1, _p2);
+        }   //end function 'drawConnection'
         /// <summary>
         /// find locations for current binary tree nodes
         /// </summary>
